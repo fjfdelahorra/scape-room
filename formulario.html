@@ -2,7 +2,7 @@
 <html lang="es">
 <head>
     <meta charset="UTF-8">
-    <title>Escape Room - Inicio</title>
+    <title>Escape Room - Comprobación</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;500;700&display=swap" rel="stylesheet">
@@ -59,8 +59,7 @@
 <body>
 <div id="app">
     <h1>Escape Room: Monosala Legacy</h1>
-    <p>Bienvenido al juego de escape. Resuelve los puzzles, descubre las palabras clave y
-       introdúcelas a continuación para abrir la puerta de salida.</p>
+    <p>Introduce los tokens obtenidos en cada puzzle para abrir la puerta de salida.</p>
 
     <form @submit.prevent="comprobar">
         <label>Token 1: <input type="text" v-model="token1" required></label>
