@@ -23,6 +23,10 @@
         <version>3.13.0</version>
         <configuration>
           <release>21</release>
+          <compilerArgs>
+            <arg>--add-modules</arg>
+            <arg>jdk.httpserver</arg>
+          </compilerArgs>
         </configuration>
       </plugin>
       <plugin>
@@ -44,6 +48,7 @@
         <version>3.5.0</version>
         <configuration>
           <mainClass>${exec.mainClass}</mainClass>
+          <commandlineArgs>--add-modules jdk.httpserver</commandlineArgs>
         </configuration>
       </plugin>
     </plugins>
