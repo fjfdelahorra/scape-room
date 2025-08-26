@@ -26,7 +26,7 @@ public class Main {
                 "/puzzle2.html", "puzzle2.html",
                 "/puzzle3.html", "puzzle3.html",
                 "/puzzle4.html", "puzzle4.html",
-                "/index.html", "index.html",
+                "/formulario.html", "formulario.html",
                 "/enhorabuena.html", "enhorabuena.html",
                 "/fallo.html", "fallo.html"
         );
