@@ -12,39 +12,56 @@
     </style>
 </head>
 <body>
+<div id="app">
     <h1>Escape Room: Monosala Legacy</h1>
     <p>Bienvenido al juego de escape. Resuelve los puzzles, descubre las palabras clave y
        introdúcelas a continuación para abrir la puerta de salida.</p>
 
-    <form id="escape-form">
-        <label>Token 1: <input type="text" id="token1" required></label>
-        <label>Token 2: <input type="text" id="token2" required></label>
-        <label>Token 3: <input type="text" id="token3" required></label>
-        <label>Token 4: <input type="text" id="token4" required></label>
+    <form @submit.prevent="comprobar">
+        <label>Token 1: <input type="text" v-model="token1" required></label>
+        <label>Token 2: <input type="text" v-model="token2" required></label>
+        <label>Token 3: <input type="text" v-model="token3" required></label>
+        <label>Token 4: <input type="text" v-model="token4" required></label>
         <button type="submit">Intentar salir</button>
     </form>
 
-    <div id="resultado"></div>
+    <div id="resultado" :style="{ color: color }">{{ mensaje }}</div>
+</div>
 
+    <script src="https://unpkg.com/vue@3/dist/vue.global.prod.js"></script>
     <script>
-        const expected = ["VERTX", "KAFKA", "REDIS", "JAVA21"];
-        document.getElementById('escape-form').addEventListener('submit', function(e) {
-            e.preventDefault();
-            const provided = [
-                document.getElementById('token1').value.trim().toUpperCase(),
-                document.getElementById('token2').value.trim().toUpperCase(),
-                document.getElementById('token3').value.trim().toUpperCase(),
-                document.getElementById('token4').value.trim().toUpperCase()
-            ];
-            const resultEl = document.getElementById('resultado');
-            if (expected.every((val, idx) => val === provided[idx])) {
-                resultEl.textContent = '🎉 ¡Has salido del escape room!';
-                resultEl.style.color = 'green';
-            } else {
-                resultEl.textContent = 'Código incorrecto, sigue intentando.';
-                resultEl.style.color = 'red';
+        const { createApp } = Vue;
+        createApp({
+            data() {
+                return {
+                    token1: '',
+                    token2: '',
+                    token3: '',
+                    token4: '',
+                    mensaje: '',
+                    color: ''
+                };
+            },
+            methods: {
+                async comprobar() {
+                    const params = new URLSearchParams({
+                        token1: this.token1,
+                        token2: this.token2,
+                        token3: this.token3,
+                        token4: this.token4
+                    });
+                    const res = await fetch('/check?' + params.toString());
+                    const data = await res.json();
+                    if (data.success) {
+                        this.mensaje = '🎉 ¡Has salido del escape room!';
+                        this.color = 'green';
+                    } else {
+                        this.mensaje = 'Código incorrecto, sigue intentando.';
+                        this.color = 'red';
+                    }
+                }
             }
-        });
+        }).mount('#app');
     </script>
 </body>
 </html>
