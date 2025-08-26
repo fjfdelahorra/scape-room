@@ -19,12 +19,30 @@ public class Main {
     public static void main(String[] args) throws IOException {
         HttpServer server = HttpServer.create(new InetSocketAddress(8080), 0);
 
+        Map<String, String> pages = Map.of(
+                "/", "bienvenida.html",
+                "/bienvenida.html", "bienvenida.html",
+                "/puzzle1.html", "puzzle1.html",
+                "/puzzle2.html", "puzzle2.html",
+                "/puzzle3.html", "puzzle3.html",
+                "/puzzle4.html", "puzzle4.html",
+                "/index.html", "index.html",
+                "/enhorabuena.html", "enhorabuena.html",
+                "/fallo.html", "fallo.html"
+        );
+
         server.createContext("/", exchange -> {
             if (!"GET".equalsIgnoreCase(exchange.getRequestMethod())) {
                 exchange.sendResponseHeaders(405, -1);
                 return;
             }
-            byte[] bytes = Files.readAllBytes(Path.of("index.html"));
+            String path = exchange.getRequestURI().getPath();
+            String file = pages.get(path);
+            if (file == null) {
+                exchange.sendResponseHeaders(404, -1);
+                return;
+            }
+            byte[] bytes = Files.readAllBytes(Path.of(file));
             exchange.getResponseHeaders().add("Content-Type", "text/html; charset=UTF-8");
             exchange.sendResponseHeaders(200, bytes.length);
             try (var os = exchange.getResponseBody()) {

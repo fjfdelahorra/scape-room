@@ -54,11 +54,6 @@
         button:hover {
             background: linear-gradient(315deg, #2575fc 0%, #6a11cb 100%);
         }
-        #resultado {
-            margin-top: 1rem;
-            font-weight: 700;
-            text-align: center;
-        }
     </style>
 </head>
 <body>
@@ -75,7 +70,6 @@
         <button type="submit">Intentar salir</button>
     </form>
 
-    <div id="resultado" :style="{ color: color }">{{ mensaje }}</div>
 </div>
 
     <script src="https://unpkg.com/vue@3/dist/vue.global.prod.js"></script>
@@ -87,9 +81,7 @@
                     token1: '',
                     token2: '',
                     token3: '',
-                    token4: '',
-                    mensaje: '',
-                    color: ''
+                    token4: ''
                 };
             },
             methods: {
@@ -103,11 +95,9 @@
                     const res = await fetch('/check?' + params.toString());
                     const data = await res.json();
                     if (data.success) {
-                        this.mensaje = '🎉 ¡Has salido del escape room!';
-                        this.color = 'green';
+                        window.location.href = 'enhorabuena.html';
                     } else {
-                        this.mensaje = 'Código incorrecto, sigue intentando.';
-                        this.color = 'red';
+                        window.location.href = 'fallo.html';
                     }
                 }
             }
