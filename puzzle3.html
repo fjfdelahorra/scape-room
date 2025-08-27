@@ -6,6 +6,8 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;500;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.7.0/styles/atom-one-dark.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.7.0/highlight.min.js"></script>
     <style>
         body {
             font-family: 'Poppins', sans-serif;
@@ -22,7 +24,7 @@
             padding: 2rem;
             border-radius: 1rem;
             box-shadow: 0 8px 16px rgba(0, 0, 0, 0.1);
-            max-width: 400px;
+            max-width: 800px;
             width: 100%;
             text-align: center;
         }
@@ -33,6 +35,13 @@
             margin-top: 1rem;
             display: flex;
             justify-content: space-between;
+        }
+        pre {
+            text-align: left;
+            background: #282c34;
+            border-radius: .5rem;
+            padding: 1rem;
+            overflow-x: auto;
         }
         button {
             padding: .75rem 1rem;
@@ -52,10 +61,51 @@
 <div id="app">
     <h1>Puzzle 3</h1>
     <p>Descripción del tercer puzzle.</p>
+    <pre><code class="language-java">package com.chapterescape;
+
+import java.util.List;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+
+/**
+ * Objetivo: de estas líneas sacar &quot;REDIS&quot; concatenando el contenido de [x] correcto en orden.
+ * Bug: regex demasiado codiciosa / grupos mal definidos.
+ */
+public class Puzzle3_RegexIntel {
+
+    public static void main(String[] args) {
+        var lines = List.of(
+                &quot;2025-08-21 INFO payload id=001 user=42 meta=[ignore] tag=[RE] extra=ok trail=[x]&quot;,
+                &quot;2025-08-21 INFO payload id=002 user=42 meta=[foo]    tag=[D]  extra=ok trail=[y]&quot;,
+                &quot;2025-08-21 INFO payload id=003 user=42 meta=[bar]    tag=[I]  extra=ok trail=[z]&quot;,
+                &quot;2025-08-21 INFO payload id=004 user=42 meta=[baz]    tag=[S]  extra=ok trail=[w]&quot;
+        );
+
+        // BUG: codiciosa y no anclada al campo &#x27;tag&#x27;
+        Pattern p = Pattern.compile(&quot;tag=(.*)&quot;);
+
+        StringBuilder sb = new StringBuilder();
+        for (String line : lines) {
+            Matcher m = p.matcher(line);
+            if (m.find()) {
+                var chunk = m.group(1);
+                // Lógica de ensamblado (correcta), pero falla si la captura es basura
+                if (chunk.length() &gt;= 2 &amp;&amp; chunk.startsWith(&quot;RE&quot;)) {
+                    sb.append(&quot;RE&quot;);
+                } else if (!chunk.isEmpty()) {
+                    sb.append(chunk.charAt(0));
+                }
+            }
+        }
+        System.out.println(sb.toString()); // Con el bug: basura. Arreglado: REDIS.
+    }
+}
+</code></pre>
     <div class="buttons">
         <button onclick="location.href='puzzle2.html'">Anterior</button>
         <button onclick="location.href='puzzle4.html'">Siguiente</button>
     </div>
 </div>
+<script>hljs.highlightAll();</script>
 </body>
 </html>

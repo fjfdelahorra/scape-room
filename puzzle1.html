@@ -6,6 +6,8 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;500;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.7.0/styles/atom-one-dark.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.7.0/highlight.min.js"></script>
     <style>
         body {
             font-family: 'Poppins', sans-serif;
@@ -22,12 +24,19 @@
             padding: 2rem;
             border-radius: 1rem;
             box-shadow: 0 8px 16px rgba(0, 0, 0, 0.1);
-            max-width: 400px;
+            max-width: 800px;
             width: 100%;
             text-align: center;
         }
         h1 {
             color: #ff6f61;
+        }
+        pre {
+            text-align: left;
+            background: #282c34;
+            border-radius: .5rem;
+            padding: 1rem;
+            overflow-x: auto;
         }
         button {
             margin-top: 1rem;
@@ -48,7 +57,36 @@
 <div id="app">
     <h1>Puzzle 1</h1>
     <p>Aquí se presentará el primer puzzle.</p>
+    <pre><code class="language-java">package com.chapterescape;
+
+import java.util.List;
+
+/**
+ * Objetivo: imprimir VERTX
+ * Pista: el mensaje está escondido tomando letras en posiciones correctas.
+ * Bug: límites e incremento.
+ */
+public class Puzzle1_OffByOne {
+
+    public static void main(String[] args) {
+        String noisy = &quot;VxEeQZrtYTXr—noep—XR!@#T$%^&amp;*()&quot;;
+        int start = 0;
+        int step  = 2; // sospechoso
+        StringBuilder sb = new StringBuilder();
+
+        for (int i = start; i &lt;= noisy.length(); i += step) { // BUG: &lt;=
+            char c = noisy.charAt(i); // puede petar al final
+            if (Character.isAlphabetic(c)) {
+                sb.append(c);
+            }
+        }
+        String token = sb.toString();
+        System.out.println(token); // Debe imprimir: VERTX tras arreglo
+    }
+}
+</code></pre>
     <button onclick="location.href='puzzle2.html'">Siguiente</button>
 </div>
+<script>hljs.highlightAll();</script>
 </body>
 </html>
