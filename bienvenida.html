@@ -42,12 +42,34 @@
         button:hover {
             background: linear-gradient(315deg, #2575fc 0%, #6a11cb 100%);
         }
+        pre {
+            background: #f4f4f4;
+            padding: 1rem;
+            border-radius: .5rem;
+            text-align: left;
+            overflow-x: auto;
+        }
+        code {
+            font-family: monospace;
+        }
     </style>
 </head>
 <body>
 <div id="app">
     <h1>Escape Room</h1>
     <p>Bienvenido al juego. Resuelve los cuatro puzzles para obtener los tokens y escapar.</p>
+    <h2>¿Cómo levantar el servidor?</h2>
+    <ol>
+        <li>Compila el proyecto:
+            <pre><code>mvn package</code></pre>
+        </li>
+        <li>Ejecuta el servidor HTTP embebido:
+            <pre><code>java --add-modules jdk.httpserver -jar target/escape-room-java-1.0.0.jar</code></pre>
+        </li>
+    </ol>
+    <p>El servicio quedará disponible en <code>http://localhost:8080</code>.</p>
+    <p>Si prefieres ejecutar sin empaquetar, usa:</p>
+    <pre><code>mvn exec:java -Dexec.mainClass=com.chapterescape.Main</code></pre>
     <button onclick="location.href='puzzle1.html'">Siguiente</button>
 </div>
 </body>
