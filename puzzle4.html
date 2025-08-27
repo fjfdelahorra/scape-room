@@ -6,6 +6,8 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;500;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.7.0/styles/atom-one-dark.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.7.0/highlight.min.js"></script>
     <style>
         body {
             font-family: 'Poppins', sans-serif;
@@ -22,7 +24,7 @@
             padding: 2rem;
             border-radius: 1rem;
             box-shadow: 0 8px 16px rgba(0, 0, 0, 0.1);
-            max-width: 400px;
+            max-width: 800px;
             width: 100%;
             text-align: center;
         }
@@ -33,6 +35,13 @@
             margin-top: 1rem;
             display: flex;
             justify-content: space-between;
+        }
+        pre {
+            text-align: left;
+            background: #282c34;
+            border-radius: .5rem;
+            padding: 1rem;
+            overflow-x: auto;
         }
         button {
             padding: .75rem 1rem;
@@ -52,10 +61,49 @@
 <div id="app">
     <h1>Puzzle 4</h1>
     <p>Descripción del cuarto puzzle.</p>
+    <pre><code class="language-java">package com.chapterescape;
+
+import java.nio.charset.Charset;
+import java.util.Base64;
+
+/**
+ * Objetivo: imprimir &quot;JAVA21&quot;.
+ * Proceso correcto: Base64 decode, luego shift -1 sobre letras/dígitos que corresponda.
+ * Bugs: charset y dirección del shift.
+ */
+public class Puzzle4_CryptoChain {
+
+    public static void main(String[] args) {
+        // Base64 de &quot;KBWB32&quot; =&gt; &quot;S0JXQjMy&quot;
+        String base64 = &quot;S0JXQjMy&quot;;
+        byte[] decoded = Base64.getDecoder().decode(base64);
+
+        // BUG: charset y shifts
+        String s = new String(decoded, Charset.forName(&quot;ISO-8859-1&quot;));
+        StringBuilder out = new StringBuilder();
+
+        for (char c : s.toCharArray()) {
+            if (Character.isUpperCase(c)) {
+                // incorrecto: +1
+                char shifted = (char) (&#x27;A&#x27; + (c - &#x27;A&#x27; + 1) % 26);
+                out.append(shifted);
+            } else if (Character.isDigit(c)) {
+                // incorrecto: +1
+                char shifted = (char) (&#x27;0&#x27; + (c - &#x27;0&#x27; + 1) % 10);
+                out.append(shifted);
+            } else {
+                out.append(c);
+            }
+        }
+        System.out.println(out.toString()); // Debe imprimir: JAVA21 tras arreglo
+    }
+}
+</code></pre>
     <div class="buttons">
         <button onclick="location.href='puzzle3.html'">Anterior</button>
         <button onclick="location.href='formulario.html'">Siguiente</button>
     </div>
 </div>
+<script>hljs.highlightAll();</script>
 </body>
 </html>
