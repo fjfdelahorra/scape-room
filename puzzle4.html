@@ -9,109 +9,101 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.7.0/styles/atom-one-dark.min.css">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.7.0/highlight.min.js"></script>
     <style>
-        body {
-            font-family: 'Poppins', sans-serif;
-            margin: 0;
-            min-height: 100vh;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            background: linear-gradient(135deg, #ff9a9e 0%, #fad0c4 100%);
-            color: #333;
-        }
-        #app {
-            background: #fff;
-            padding: 2rem;
-            border-radius: 1rem;
-            box-shadow: 0 8px 16px rgba(0, 0, 0, 0.1);
-            max-width: 800px;
-            width: 100%;
-            text-align: center;
-        }
-        h1 {
-            color: #ff6f61;
-        }
-        .buttons {
-            margin-top: 1rem;
-            display: flex;
-            justify-content: space-between;
-        }
-        pre {
-            text-align: left;
-            background: #282c34;
-            border-radius: .5rem;
-            padding: 1rem;
-            overflow-x: auto;
-        }
-        button {
-            padding: .75rem 1rem;
-            background: linear-gradient(315deg, #6a11cb 0%, #2575fc 100%);
-            color: #fff;
-            border: none;
-            border-radius: .5rem;
-            cursor: pointer;
-            transition: background .3s ease;
-        }
-        button:hover {
-            background: linear-gradient(315deg, #2575fc 0%, #6a11cb 100%);
-        }
-        .info-box {
-            margin-top: 1rem;
-            padding: 1rem;
-            background: #e0f7fa;
-            border-left: 5px solid #00796b;
-            border-radius: .5rem;
-            text-align: left;
-        }
+        body { font-family: 'Poppins', sans-serif; margin:0; min-height:100vh; display:flex; justify-content:center; align-items:center; background:linear-gradient(135deg,#ff9a9e 0%,#fad0c4 100%); color:#333; }
+        #app { background:#fff; padding:2rem; border-radius:1rem; box-shadow:0 8px 16px rgba(0,0,0,.1); max-width:900px; width:100%; text-align:center; }
+        h1 { color:#ff6f61; }
+        .buttons { margin-top:1rem; display:flex; justify-content:space-between; gap:1rem; flex-wrap:wrap; }
+        pre { text-align:left; background:#282c34; border-radius:.75rem; padding:1rem; overflow:auto; margin:0; }
+        .code-block { position:relative; margin-top:1.25rem; }
+        .copy-btn { position:absolute; top:.5rem; right:.5rem; background:rgba(255,255,255,.12); color:#fff; border:1px solid rgba(255,255,255,.25); padding:.4rem .7rem; font-size:.75rem; border-radius:.4rem; cursor:pointer; backdrop-filter:blur(4px); transition:background .2s,border-color .2s; display:flex; align-items:center; gap:.35rem; }
+        .copy-btn:hover { background:rgba(255,255,255,.25); border-color:#fff; }
+        .copy-btn.copied { background:#2e7d32; border-color:#2e7d32; }
+        button { padding:.75rem 1rem; background:linear-gradient(315deg,#6a11cb 0%,#2575fc 100%); color:#fff; border:none; border-radius:.5rem; cursor:pointer; transition:background .3s; }
+        button:hover { background:linear-gradient(315deg,#2575fc 0%,#6a11cb 100%); }
+        .info-box { margin-top:1.25rem; padding:1rem; background:#e0f7fa; border-left:5px solid #00796b; border-radius:.5rem; text-align:left; }
+        code { font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, "Liberation Mono", monospace; font-size:.85rem; }
+        ul.features { text-align:left; margin:0 0 1rem 0; padding-left:1.15rem; }
+        ul.features li { margin:.25rem 0; }
     </style>
 </head>
 <body>
 <div id="app">
     <h1>Puzzle 4</h1>
-    <p>La última prueba combina una decodificación Base64 con un desplazamiento
-        de caracteres. Observa el conjunto de caracteres utilizado y la
-        dirección del desplazamiento para reconstruir el mensaje original.</p>
-    <pre><code class="language-java">package com.chapterescape;
+    <p>Última prueba: aplica varias features estabilizadas en Java 21 (virtual threads, records / pattern matching, sequenced collections). Corrige los bugs para obtener el token final.</p>
+    <ul class="features">
+        <li>Virtual Threads (JEP 444) creando tareas ligeras.</li>
+        <li>Records + sealed interfaces y pattern matching en switch.</li>
+        <li>SequencedCollection: uso erróneo de <code>reversed()</code>.</li>
+        <li>Decodificación por desplazamiento de caracteres.</li>
+    </ul>
+    <div class="code-block">
+        <button class="copy-btn" data-target="code4" aria-label="Copiar código">Copiar</button>
+        <pre><code id="code4" class="language-java">package com.chapterescape;
 
-import java.nio.charset.Charset;
-import java.util.Base64;
+import java.util.*;
+import java.util.concurrent.*;
+import java.util.random.RandomGenerator;
 
-/**
- * Objetivo: imprimir &quot;JAVA21&quot;.
- * Proceso correcto: Base64 decode, luego shift -1 sobre letras/dígitos que corresponda.
- * Bugs: charset y dirección del shift.
- */
 public class Puzzle4_CryptoChain {
+    sealed interface Token permits LetterToken, DigitToken {}
+    record LetterToken(int index, char value) implements Token {}
+    record DigitToken(int index, char value) implements Token {}
 
-    public static void main(String[] args) {
-        // Base64 de &quot;KBWB32&quot; =&gt; &quot;S0JXQjMy&quot;
-        String base64 = &quot;S0JXQjMy&quot;;
-        byte[] decoded = Base64.getDecoder().decode(base64);
+    public static void main(String[] args) throws Exception {
+        // Objetivo real: JAVA21 (codificado +1 => K B W B 3 2)
+        var encoded = List.of('K','B','W','B','3','2');
 
-        // BUG: charset y shifts
-        String s = new String(decoded, Charset.forName(&quot;ISO-8859-1&quot;));
-        StringBuilder out = new StringBuilder();
-
-        for (char c : s.toCharArray()) {
-            if (Character.isUpperCase(c)) {
-                // incorrecto: +1
-                char shifted = (char) (&#x27;A&#x27; + (c - &#x27;A&#x27; + 1) % 26);
-                out.append(shifted);
-            } else if (Character.isDigit(c)) {
-                // incorrecto: +1
-                char shifted = (char) (&#x27;0&#x27; + (c - &#x27;0&#x27; + 1) % 10);
-                out.append(shifted);
-            } else {
-                out.append(c);
+        ExecutorService exec = Executors.newVirtualThreadPerTaskExecutor();
+        try {
+            var futures = new ArrayList&lt;Future&lt;Token&gt;&gt;();
+            for (int i = 0; i &lt; encoded.size(); i++) {
+                int idx = i; char c = encoded.get(i);
+                futures.add(exec.submit(() -&gt; produce(idx, c)));
             }
+            var collected = new ArrayList&lt;Token&gt;();
+            for (var f : futures) collected.add(f.get());
+
+            // BUG 1: Uso erróneo: invertir rompe el orden original necesario
+            var ordered = collected.reversed();
+
+            var sb = new StringBuilder();
+            for (Token t : ordered) {
+                if (t == null) continue; // defensa
+                // WITHOUT guards 'when' para que el switch sea exhaustivo (dos subtipos sellados)
+                // BUG 2: shift incorrecto (+1). Debe revertir la codificación (-1)
+                String decoded = switch (t) {
+                    case LetterToken(int pos, char c) -> {
+                        char shifted = (char) ('A' + (c - 'A' + 1) % 26); // debería ser -1
+                        yield String.valueOf(shifted);
+                    }
+                    case DigitToken(int pos, char c) -> {
+                        char shifted = (char) ('0' + (c - '0' + 1) % 10); // debería ser -1
+                        yield String.valueOf(shifted);
+                    }
+                };
+                sb.append(piece);
+            }
+            System.out.println(sb); // Arreglando BUGs =&gt; JAVA21
+        } finally {
+            exec.close(); // (Mejora) try-with-resources
         }
-        System.out.println(out.toString()); // Debe imprimir: JAVA21 tras arreglo
     }
-}
-</code></pre>
+
+    static Token produce(int index, char c) throws InterruptedException {
+        Thread.sleep(RandomGenerator.getDefault().nextInt(5,25));
+        return Character.isDigit(c) ? new DigitToken(index, c) : new LetterToken(index, c);
+    }
+}</code></pre>
+    </div>
     <div class="info-box">
-        <h2>Cómo ejecutar</h2>
-        <p>Desde la raíz del proyecto, ejecuta en la terminal:</p>
+        <h2>Errores que debes localizar</h2>
+        <ol>
+            <li>Orden invertido con <code>reversed()</code>.</li>
+            <li>Desplazamiento usa +1 (debe ser -1 con wrap para letras/dígitos).</li>
+            <li>(Mejora) Cerrar executor con try-with-resources.</li>
+            <li>(Mejora) Eliminar variables de patrón no usadas.</li>
+        </ol>
+        <h2>Ejecutar</h2>
         <p><code>mvn exec:java -Dexec.mainClass=com.chapterescape.Puzzle4_CryptoChain</code></p>
     </div>
     <div class="buttons">
@@ -119,6 +111,6 @@ public class Puzzle4_CryptoChain {
         <button onclick="location.href='formulario.html'">Siguiente</button>
     </div>
 </div>
-<script>hljs.highlightAll();</script>
+<script>hljs.highlightAll();function copyCode(btn){const id=btn.getAttribute('data-target');const el=document.getElementById(id);if(!el)return;const raw=el.innerText;navigator.clipboard.writeText(raw).then(()=>{btn.classList.add('copied');btn.textContent='Copiado';setTimeout(()=>{btn.classList.remove('copied');btn.textContent='Copiar';},1600);});}for(const b of document.querySelectorAll('.copy-btn')){b.addEventListener('click',()=>copyCode(b));}</script>
 </body>
 </html>
