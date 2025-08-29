@@ -72,6 +72,38 @@ public class Main {
             }
         });
 
+        // Nuevo context para archivos estáticos en /img
+        server.createContext("/img", exchange -> {
+            if (!"GET".equalsIgnoreCase(exchange.getRequestMethod())) {
+                exchange.sendResponseHeaders(405, -1);
+                return;
+            }
+            String reqPath = exchange.getRequestURI().getPath(); // p.ej. /img/insignia.png
+            String prefix = "/img/";
+            if (!reqPath.startsWith(prefix) || reqPath.length() <= prefix.length()) {
+                exchange.sendResponseHeaders(404, -1);
+                return;
+            }
+            String fileName = reqPath.substring(prefix.length());
+            // Evitar traversal
+            if (fileName.contains("..") || fileName.contains("\\") ) {
+                exchange.sendResponseHeaders(400, -1);
+                return;
+            }
+            Path filePath = Path.of("img", fileName).normalize();
+            if (!Files.exists(filePath) || !Files.isRegularFile(filePath)) {
+                exchange.sendResponseHeaders(404, -1);
+                return;
+            }
+            byte[] bytes = Files.readAllBytes(filePath);
+            String contentType = contentTypeFor(fileName);
+            exchange.getResponseHeaders().add("Content-Type", contentType);
+            exchange.sendResponseHeaders(200, bytes.length);
+            try (var os = exchange.getResponseBody()) {
+                os.write(bytes);
+            }
+        });
+
         server.start();
         System.out.println("Servidor iniciado en http://localhost:8080");
     }
@@ -88,5 +120,16 @@ public class Main {
             result.put(key, value);
         }
         return result;
+    }
+
+    // Nuevo helper para content-type
+    private static String contentTypeFor(String name) {
+        String lower = name.toLowerCase();
+        if (lower.endsWith(".png")) return "image/png";
+        if (lower.endsWith(".jpg") || lower.endsWith(".jpeg")) return "image/jpeg";
+        if (lower.endsWith(".gif")) return "image/gif";
+        if (lower.endsWith(".svg")) return "image/svg+xml";
+        if (lower.endsWith(".webp")) return "image/webp";
+        return "application/octet-stream";
     }
 }

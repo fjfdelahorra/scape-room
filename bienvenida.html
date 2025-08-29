@@ -72,7 +72,30 @@
             color: #ffcc00;
             padding: 1rem;
             border-radius: 0.5rem;
+            position: relative; /* para posicionar botón */
         }
+        /* Bloques con botón: más espacio arriba para que no solape el texto */
+        .info-box pre.has-copy { padding-top: 2.2rem; }
+        .copy-btn {
+            position: absolute;
+            top: 6px;
+            right: 6px;
+            background: linear-gradient(135deg, #444 0%, #222 100%);
+            color: #ffcc00;
+            border: 1px solid #555;
+            padding: 0.35rem 0.65rem;
+            font-size: 0.65rem;
+            font-weight: 600;
+            border-radius: 6px;
+            cursor: pointer;
+            letter-spacing: .5px;
+            line-height: 1;
+            opacity: .65;
+            transition: opacity .25s, transform .25s, background .25s, color .25s, border-color .25s;
+        }
+        .copy-btn:hover { opacity: 1; transform: translateY(-2px); background: #ffcc00; color: #222; border-color: #ffcc00; }
+        .copy-btn:active { transform: translateY(0); }
+        .copy-btn.copied { background: #3bb273; color: #fff; border-color: #3bb273; opacity: 1; }
     </style>
 </head>
 <body>
@@ -84,11 +107,14 @@
 <div class="info-box">
     <h2>¿Cómo levantar el servidor?</h2>
     <ol>
+        <li>Descarga el proyecto:
+            <pre><code id="clone-cmd">git clone https://github.com/fjfdelahorra/scape-room</code></pre>
+        </li>
         <li>Compila el proyecto:
-            <pre><code>mvn package</code></pre>
+            <pre><code id="mvn-cmd">mvn package</code></pre>
         </li>
         <li>Ejecuta el servidor HTTP embebido:
-            <pre><code>java --add-modules jdk.httpserver -jar target/escape-room-java-1.0.0.jar</code></pre>
+            <pre><code id="run-cmd">java --add-modules jdk.httpserver -jar target/escape-room-java-1.0.0.jar</code></pre>
         </li>
     </ol>
     <p>El servicio quedará disponible en <code>http://localhost:8080</code>.</p>
@@ -96,5 +122,32 @@
     <pre><code>mvn exec:java -Dexec.mainClass=com.chapterescape.Main</code></pre>
     <p>También puedes ejecutar el proyecto desde IntelliJ usando el botón <strong>Run</strong>.</p>
 </div>
+<script>
+(function(){
+  const preBlocks = document.querySelectorAll('.info-box pre');
+  preBlocks.forEach(pre => {
+    const code = pre.querySelector('code');
+    if(!code) return;
+    const btn = document.createElement('button');
+    btn.type = 'button';
+    btn.className = 'copy-btn';
+    btn.textContent = 'COPIAR';
+    btn.addEventListener('click', async () => {
+        try {
+            await navigator.clipboard.writeText(code.innerText.trim());
+            const original = btn.textContent;
+            btn.textContent = 'COPIADO';
+            btn.classList.add('copied');
+            setTimeout(()=>{ btn.textContent = original; btn.classList.remove('copied'); }, 1800);
+        } catch(e){
+            btn.textContent = 'ERROR';
+            setTimeout(()=>{ btn.textContent = 'COPIAR'; }, 1500);
+        }
+    });
+    pre.appendChild(btn);
+    pre.classList.add('has-copy');
+  });
+})();
+</script>
 </body>
 </html>
